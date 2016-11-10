@@ -196,18 +196,73 @@ void readScene(char* filename, Object** objects) {
 					// if the key is width, radius, or height, using nextNumber() would be
 					// a good choice to get those values
 					if ((strcmp(key, "width") == 0) || (strcmp(key, "height") == 0) ||
-						(strcmp(key, "radius") == 0)) {
+						(strcmp(key, "radius") == 0) || (strcmp(key, "reflectivity") == 0) ||
+						(strcmp(key, "refractivity") == 0) || (strcmp(key, "ior") == 0)) {
 						double value = nextNumber(json);
 						// Also, object[i]->someObject.property = value would be the solution for
 						// saving value into the object.
 						if (strcmp(key, "width") == 0) {
-							objects[i]->camera.width = value;
+							if (strcmp(tempKey, "camera") == 0){
+								objects[i]->camera.width = value;
+							}
+							else{
+								fprintf(stderr, "Error: Unknown type!\n");
+								exit(1);
+							}
 						}
 						else if (strcmp(key, "height") == 0) {
-							objects[i]->camera.height = value;
+							if (strcmp(tempKey, "camera") == 0){
+								objects[i]->camera.height = value;
+							}
+							else{
+								fprintf(stderr, "Error: Unknown type!\n");
+								exit(1);
+							}
 						}
-						else {
-							objects[i]->sphere.radius = value;
+						else if (strcmp(key, "radius") == 0){
+							if (strcmp(tempKey, "sphere") == 0){
+								objects[i]->sphere.radius = value;
+							}
+							else{
+								fprintf(stderr, "Error: Unknown type!\n");
+								exit(1);
+							}
+						}
+						else if (strcmp(key, "reflectivity") == 0){
+							if (strcmp(tempKey, "sphere") == 0){
+								objects[i]->shpere.reflectivity = value;
+							}
+							else if (strcmp(tempKey, "plane") == 0){
+								objects[i]->plane.reflectivity = value;
+							}
+							else{
+								fprintf(stderr, "Error: Unknow type!\n");
+								exit(1)
+							}
+						}
+						else if (strcmp(key, "refractivity") == 0){
+							if (strcmp(tempKey, "sphere") == 0){
+								objects[i]->shpere.refractivity = value;
+							}
+							else if (strcmp(tempKey, "plane") == 0){
+								objects[i]->plane.refractivity = value;
+							}
+							else{
+								fprintf(stderr, "Error: Unknown type!\n");
+								exit(1);
+							}
+						}
+						else{
+							if (strcmp(tempKey, "sphere") == 0){
+								objects[i]->sphere.ior = value;
+							}
+							else if (strcmp(tempKey, "plane") == 0){
+								objects[i]->plane.ior = value;
+							}
+							else{
+								fprintf(stderr, "Error: Unknow type!\n");
+								exit(1);
+							}
 						}
 					}
 					// if the key is color, position or normal, then it would be a 3d vector in the json file
