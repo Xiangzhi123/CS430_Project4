@@ -30,7 +30,7 @@ static inline void normalize(double* v) {
  	double len = sqrt(sqr(v[0]) + sqr(v[1]) + sqr(v[2]));
 	v[0] /= len;
 	v[1] /= len;
-  	v[2] /= len;
+  v[2] /= len;
 }
 
 
@@ -319,6 +319,102 @@ double clamp(double num){
 	return num;
 }
 
+
+double* recursiveShoot(int intersection, double* Rd, double* Ro, double r, double g, double b, Object** objects, int recursiveDepth){
+	double color[3];
+	color[0] = red;
+	color[1] = green;
+	color[2] = blue;
+	if (depth > 7) {
+		return color;
+	}
+	double Ron[3];
+	double N[3];
+	double V[3];
+	V[0] = Rd[0];
+	V[1] = Rd[1];
+	V[2] = Rd[2];
+	Ron[0] = bestT*Rd[0] + Ro[0];
+	Ron[1] = bestT*Rd[1] + Ro[1];
+	Ron[2] = bestT*Rd[2] + Ro[2];
+	if (objects[intersection]->kind == 1) {
+		N[0] = Ron[0] - objects[intersection]->sphere.position[0];
+		N[1] = Ron[1] - objects[intersection]->sphere.position[1];
+		N[2] = Ron[2] - objects[intersection]->sphere.position[2];
+	}
+	else if (objects[intersection]->kind == 2) {
+		N[0] = objects[intersection]->plane.normal[0];
+		N[1] = objects[intersection]->plane.normal[1];
+		N[2] = objects[intersection]->plane.normal[2];
+	}
+	normalize(N);
+	double intersectPosition[3];
+	intersectPosition[0] = Ron[0];
+	intersectPosition[1] = Ron[1];
+	intersectPosition[2] = Ron[2];
+	double L[3];
+	double R[3];
+	double Rdn[3]; // Rdn = light position - Ron;
+	int z;
+	for (z = 0; objects[z] != 0; z++) {
+		if (objects[z]->kind == 3) {
+			Rdn[0] = objects[z]->light.position[0] - Ron[0];
+			Rdn[1] = objects[z]->light.position[1] - Ron[1];
+			Rdn[2] = objects[z]->light.position[2] - Ron[2];
+			double t;
+			double lightDistance = sqrt(sqr(Rdn[0]) + sqr(Rdn[1]) + sqr(Rdn[2]));
+			t = lightDistance;
+			normalize(Rdn);
+			int w;
+			// shading part
+			for (w = 0; objects[w] != 0; w++) {
+				if (w != intersection) {
+					if (objects[w]->kind == 1) {
+						t = sphereIntersection(Ron, Rdn, objects[w]->sphere.position, objects[w]->sphere.radius);
+						if (t > 0 && t < lightDistance) {
+							hasShadow = 1;
+						}
+					}
+					else if (objects[w]->kind == 2) {
+						t = planeIntersection(Ron, Rdn, objects[w]->plane.position, objects[w]->plane.normal);
+						if (t > 0 && t < lightDistance) {
+							hasShadow = 1;
+						}
+					}
+				}
+			}
+			if (hasShadow == 0) {
+				L[0] = Rdn[0];
+				L[1] = Rdn[1];
+				L[2] = Rdn[2];
+				normalize(L);
+				// R= L-(2N*L)N
+				// dot product for N*L
+				double NL = N[0] * L[0] + N[1] * L[1] + N[2] * L[2];
+				R[0] = -2 * NL*N[0] + L[0];
+				R[1] = -2 * NL*N[1] + L[1];
+				R[2] = -2 * NL*N[2] + L[2];
+				double* diff;
+				double* spec;
+				diff = malloc(sizeof(double) * 3);
+				spec = malloc(sizeof(double) * 3);
+				double fr, fa;
+				fr = frad(z, intersectPosition, objects);
+				fa = fang(z, intersectPosition, objects);
+				diff = diffuse(intersection, z, N, L, objects);
+				spec = specular(intersection, z, NL, V, R, objects);
+				color[0] += fr*fa*(diff[0] + spec[0]);
+				color[1] += fr*fa*(diff[1] + spec[1]);
+				color[2] += fr*fa*(diff[2] + spec[2]);
+
+				double newRo[3];
+				double newRd[3];
+				return recursiveShoot()
+			}
+		}
+	}
+}
+
 // raycasting function
 PPMimage* rayCasting(char* filename, int w, int h, Object** objects) {
 	PPMimage* buffer = (PPMimage*)malloc(sizeof(PPMimage));
@@ -357,7 +453,7 @@ PPMimage* rayCasting(char* filename, int w, int h, Object** objects) {
 	double pixheight = height / h;
 	double pointx, pointy, pointz;
 	int j, k;
-  	double Ro[3] = {0, 0, 0};
+	double Ro[3] = {0, 0, 0};
 	for (k = 0; k<h; k++) {
 		int count = (h-k-1)*w*3;
 		double vy = -height / 2 + pixheight * (k + 0.5);
@@ -369,95 +465,22 @@ PPMimage* rayCasting(char* filename, int w, int h, Object** objects) {
 			double* inter;
 			inter = malloc(sizeof(double)*2);
 
-      			inter = intersect(Rd, i, objects);
-     			int intersection = (int)inter[0];
-      			double bestT = inter[1];
+			inter = intersect(Rd, i, objects);
+     		int intersection = (int)inter[0];
+			double bestT = inter[1];
 			pixel->r = 0;
 			pixel->g = 0;
 			pixel->b = 0;
 			int hasShadow = 0;
 			if (intersection>=0) {
-				double Ron[3];
-				double N[3];
-				double V[3];
-				V[0] = Rd[0];
-				V[1] = Rd[1];
-				V[2] = Rd[2];
-				Ron[0] = bestT*Rd[0] + Ro[0];
-				Ron[1] = bestT*Rd[1] + Ro[1];
-				Ron[2] = bestT*Rd[2] + Ro[2];
-				if (objects[intersection]->kind == 1){
-					N[0] = Ron[0] - objects[intersection]->sphere.position[0];
-					N[1] = Ron[1] - objects[intersection]->sphere.position[1];
-					N[2] = Ron[2] - objects[intersection]->sphere.position[2];
-				}
-				else if (objects[intersection]->kind == 2){
-					N[0] = objects[intersection]->plane.normal[0];
-					N[1] = objects[intersection]->plane.normal[1];
-					N[2] = objects[intersection]->plane.normal[2];
-				}
-				normalize(N);
-				double intersectPosition[3];
-				intersectPosition[0] = Ron[0];
-				intersectPosition[1] = Ron[1];
-				intersectPosition[2] = Ron[2];
-        			double L[3];
-        			double R[3];
-				double Rdn[3]; // Rdn = light position - Ron;
-				int z;
-				for (z = 0; objects[z] != 0; z++) {
-					if (objects[z]->kind == 3) {
-						Rdn[0] = objects[z]->light.position[0] - Ron[0];
-						Rdn[1] = objects[z]->light.position[1] - Ron[1];
-						Rdn[2] = objects[z]->light.position[2] - Ron[2];
-						double t;
-						double lightDistance = sqrt(sqr(Rdn[0]) + sqr(Rdn[1]) + sqr(Rdn[2]));
-						t = lightDistance;
-						normalize(Rdn);
-						int w;
-						// shading part
-						for (w = 0; objects[w] != 0; w++){
-							if (w != intersection){
-								if (objects[w]->kind == 1) {
-									t = sphereIntersection(Ron, Rdn, objects[w]->sphere.position, objects[w]->sphere.radius);
-									if (t > 0 && t < lightDistance){
-										hasShadow = 1;
-									}
-								}
-								else if (objects[w]->kind == 2) {
-									t = planeIntersection(Ron, Rdn, objects[w]->plane.position, objects[w]->plane.normal);
-									if (t > 0 && t < lightDistance){
-										hasShadow = 1;
-									}
-								}
-							}
-						}
-						if (hasShadow == 0){
-							L[0] = Rdn[0];
-							L[1] = Rdn[1];
-							L[2] = Rdn[2];
-							normalize(L);
-							// R= L-(2N*L)N
-							// dot product for N*L
-							double NL = N[0] * L[0] + N[1] * L[1] + N[2] * L[2];
-							R[0] = -2 * NL*N[0] + L[0];
-							R[1] = -2 * NL*N[1] + L[1];
-							R[2] = -2 * NL*N[2] + L[2];
-							double* diff;
-							double* spec;
-							diff = malloc(sizeof(double) * 3);
-							spec = malloc(sizeof(double) * 3);
-							double fr, fa;
-							fr = frad(z, intersectPosition, objects);
-							fa = fang(z, intersectPosition, objects);
-							diff = diffuse(intersection, z, N, L, objects);
-							spec = specular(intersection, z, NL, V, R, objects);
-							pixel->r += fr*fa*(diff[0] + spec[0]);
-							pixel->g += fr*fa*(diff[1] + spec[1]);
-							pixel->b += fr*fa*(diff[2] + spec[2]);
-						}
-					}
-				}
+				int recursiveDepth = 1;
+				double red = 0;
+				double green = 0;
+				double blue = 0;
+				double* color = recursiveShoot(intersection, Rd, Ro, red, green, blue, objects, recursiveDepth);
+				pixel->r = color[0];
+				pixel->g = color[1];
+				pixel->b = color[2];
 			}
 			else {
 				pixel->r = 0;
