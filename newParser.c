@@ -162,9 +162,15 @@ void readScene(char* filename, Object** objects) {
 			}
 			else if (strcmp(value, "sphere") == 0) {
 				objects[i]->kind = 1;
+				objects[i]->sphere.reflectivity = 0;
+				objects[i]->sphere.refractivity = 0;
+				objects[i]->sphere.ior = 1;
 			}
 			else if (strcmp(value, "plane") == 0) {
 				objects[i]->kind = 2;
+				objects[i]->plane.reflectivity = 0;
+				objects[i]->plane.refractivity = 0;
+				objects[i]->plane.ior = 1;
 			}
 			else if (strcmp(value, "light") == 0){
 				objects[i]->kind = 3;
