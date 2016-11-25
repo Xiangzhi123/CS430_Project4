@@ -436,6 +436,12 @@ double* recursiveShoot(int objectNum, double* Rd, double* Ro, Object** objects, 
 					double newRd[3];
 					double* reflectionColor;
 					double* refractionColor;
+					reflectionColor[0] = 0;
+					reflectionColor[1] = 0;
+					reflectionColor[2] = 0;
+					refractionColor[0] = 0;
+					refractionColor[1] = 0;
+					refractionColor[2] = 0;
 					reflectionColor = malloc(sizeof(double) * 3);
 					refractionColor = malloc(sizeof(double) * 3);
 					if (reflectivity > 0) {
