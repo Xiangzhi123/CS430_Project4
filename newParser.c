@@ -230,19 +230,19 @@ void readScene(char* filename, Object** objects) {
 						}
 						else if (strcmp(key, "reflectivity") == 0){
 							if (strcmp(tempKey, "sphere") == 0){
-								objects[i]->shpere.reflectivity = value;
+								objects[i]->sphere.reflectivity = value;
 							}
 							else if (strcmp(tempKey, "plane") == 0){
 								objects[i]->plane.reflectivity = value;
 							}
 							else{
 								fprintf(stderr, "Error: Unknow type!\n");
-								exit(1)
+								exit(1);
 							}
 						}
 						else if (strcmp(key, "refractivity") == 0){
 							if (strcmp(tempKey, "sphere") == 0){
-								objects[i]->shpere.refractivity = value;
+								objects[i]->sphere.refractivity = value;
 							}
 							else if (strcmp(tempKey, "plane") == 0){
 								objects[i]->plane.refractivity = value;
