@@ -22,15 +22,15 @@ typedef struct PPMimage {
 
 // return the square value of v
 static inline double sqr(double v) {
-  	return v*v;
+	return v*v;
 }
 
 // normalize the vector to a 3d unit vector
 static inline void normalize(double* v) {
- 	double len = sqrt(sqr(v[0]) + sqr(v[1]) + sqr(v[2]));
+	double len = sqrt(sqr(v[0]) + sqr(v[1]) + sqr(v[2]));
 	v[0] /= len;
 	v[1] /= len;
-  v[2] /= len;
+	v[2] /= len;
 }
 
 
@@ -49,7 +49,7 @@ int PPMDataWrite(char ppmVersionNum, FILE *outputFile, PPMimage* buffer) {
 		for (i = 0; i < buffer->height; i++) {
 			for (j = 0; j < buffer->width; j++) {
 				// similar thing as we did in reading body data for P3, but we use fprintf here to write data.
-				fprintf(outputFile, "%d %d %d ", buffer->data[i*buffer->width*3+j*3], buffer->data[i*buffer->width*3+j*3+1], buffer->data[i*buffer->width*3+2]);
+				fprintf(outputFile, "%d %d %d ", buffer->data[i*buffer->width * 3 + j * 3], buffer->data[i*buffer->width * 3 + j * 3 + 1], buffer->data[i*buffer->width * 3 + 2]);
 			}
 			fprintf(outputFile, "\n");
 		}
@@ -83,51 +83,51 @@ int PPMWrite(char *outPPMVersion, char *outputFilename, PPMimage* buffer) {
 
 
 double sphereIntersection(double* Ro, double* Rd, double* Center, double r) {
-  	// x = Rox + Rdx*t
-  	// y = Roy + Rdy*t
-  	// z = Roz + Rdz*t
-  	// (x - Centerx)^2 + (y - Centery)^2 + (z - Centerz)^2 = r^2
-  	//
-  	// Then, (Rox + Rdx*t - Centerx)^2 + (Roy + Rdy*t - Centery)^2
-  	// + (Roz + Rdz*t - Centery)^2 = r^2
-  	//
-  	// Then, Rox^2 + Rdx^2*t^2 + Centerx^2 + 2*Rox*Rdx*t - 2*Rox*Centerx - 2*Rdx*t*Centerx
-  	// + Roy^2 + Rdy^2*t^2 + Centery^2 + 2*Roy*Rdy*t - 2*Roy*Centery - 2*Rdy*t*Centery
-  	// + Roz^2 + Rdz^2*t^2 + Centerz^2 + 2*Roz*Rdz*t - 2*Roz*Centerz - 2*Rdz*t*Centerz
-  	//
-  	// Then, t^2(Rdx^2 + Rdy^2 + Rdz^2) +
-  	// t*(2*Rox*Rdx + 2*TRoz*Rdz + 2*Roy*Rdy - 2*Rdx*Centerx - 2*Rdy*Centery - 2*Rdz*Centerz) +
-  	// Rox^2 + Centerx^2 + Roy^2 + Centery^2 + Roz^2 + Centerz^2 -
-  	// 2*Rox*Centerx - 2*Roy*Centery - 2*Roz*Centerz
-  	// - r^2 = 0
-  	double a = sqr(Rd[0]) + sqr(Rd[1]) + sqr(Rd[2]);
-  	double b = 2*(Ro[0]*Rd[0] + Ro[1]*Rd[1] + Ro[2]*Rd[2] - Rd[0]*Center[0] - Rd[1]*Center[1] - Rd[2]*Center[2]);
-  	double c = sqr(Ro[0]) + sqr(Ro[1]) + sqr(Ro[2]) + sqr(Center[0]) +
-             sqr(Center[1]) + sqr(Center[2]) - 2*(Ro[0]*Center[0]
-             + Ro[1]*Center[1] + Ro[2]*Center[2]) - sqr(r);
-  	double det = sqr(b) - 4*a*c;
-  	if (det < 0) return -1;
-  	det = sqrt(det);
-  	double t0 = (-b - det) / (2*a);
- 	double t1 = (-b + det) / (2*a);
+	// x = Rox + Rdx*t
+	// y = Roy + Rdy*t
+	// z = Roz + Rdz*t
+	// (x - Centerx)^2 + (y - Centery)^2 + (z - Centerz)^2 = r^2
+	//
+	// Then, (Rox + Rdx*t - Centerx)^2 + (Roy + Rdy*t - Centery)^2
+	// + (Roz + Rdz*t - Centery)^2 = r^2
+	//
+	// Then, Rox^2 + Rdx^2*t^2 + Centerx^2 + 2*Rox*Rdx*t - 2*Rox*Centerx - 2*Rdx*t*Centerx
+	// + Roy^2 + Rdy^2*t^2 + Centery^2 + 2*Roy*Rdy*t - 2*Roy*Centery - 2*Rdy*t*Centery
+	// + Roz^2 + Rdz^2*t^2 + Centerz^2 + 2*Roz*Rdz*t - 2*Roz*Centerz - 2*Rdz*t*Centerz
+	//
+	// Then, t^2(Rdx^2 + Rdy^2 + Rdz^2) +
+	// t*(2*Rox*Rdx + 2*TRoz*Rdz + 2*Roy*Rdy - 2*Rdx*Centerx - 2*Rdy*Centery - 2*Rdz*Centerz) +
+	// Rox^2 + Centerx^2 + Roy^2 + Centery^2 + Roz^2 + Centerz^2 -
+	// 2*Rox*Centerx - 2*Roy*Centery - 2*Roz*Centerz
+	// - r^2 = 0
+	double a = sqr(Rd[0]) + sqr(Rd[1]) + sqr(Rd[2]);
+	double b = 2 * (Ro[0] * Rd[0] + Ro[1] * Rd[1] + Ro[2] * Rd[2] - Rd[0] * Center[0] - Rd[1] * Center[1] - Rd[2] * Center[2]);
+	double c = sqr(Ro[0]) + sqr(Ro[1]) + sqr(Ro[2]) + sqr(Center[0]) +
+		sqr(Center[1]) + sqr(Center[2]) - 2 * (Ro[0] * Center[0]
+			+ Ro[1] * Center[1] + Ro[2] * Center[2]) - sqr(r);
+	double det = sqr(b) - 4 * a*c;
+	if (det < 0) return -1;
+	det = sqrt(det);
+	double t0 = (-b - det) / (2 * a);
+	double t1 = (-b + det) / (2 * a);
 	if (t0 > 0) return t0;
- 	if (t1 > 0) return t1;
+	if (t1 > 0) return t1;
 
-  	return -1;
+	return -1;
 }
 
 double planeIntersection(double* Ro, double* Rd, double* position, double* normal) {
-  	// A(X0 + Xd * t) + B(Y0 + Yd * t) + (Z0 + Zd * t) + D = 0
-  	// A(Rox + Rdx*t) + B(Roy + Rdy*t) + C(Roz + Rdz*t) + D = 0
-  	// it could also be written as:
-  	// A(Rox + Rdx*t - positionx) + B(Roy + Rdy*t - postiony) + C(Roz + Rdz*t - positionz) = 0
-  	// t(A*Rdx + B*Rdy + C*Rdz) + (A*Rox + B*Roy + C*Roz - A*positionx - B*positiony - C*postionz) = 0
-  	// t = - (A*Rox + B*Roy + C*Roz - A*positionx - B*positiony - C*positionz) / (A*Rdx + B*Rdy + C*Rdz)
-  	double t = - (normal[0]*Ro[0] + normal[1]*Ro[1] + normal[2]*Ro[2] - normal[0]*position[0]
-                - normal[1]*position[1] - normal[2]*position[2]) / (normal[0]*Rd[0]
-                + normal[1]*Rd[1] + normal[2]*Rd[2]);
+	// A(X0 + Xd * t) + B(Y0 + Yd * t) + (Z0 + Zd * t) + D = 0
+	// A(Rox + Rdx*t) + B(Roy + Rdy*t) + C(Roz + Rdz*t) + D = 0
+	// it could also be written as:
+	// A(Rox + Rdx*t - positionx) + B(Roy + Rdy*t - postiony) + C(Roz + Rdz*t - positionz) = 0
+	// t(A*Rdx + B*Rdy + C*Rdz) + (A*Rox + B*Roy + C*Roz - A*positionx - B*positiony - C*postionz) = 0
+	// t = - (A*Rox + B*Roy + C*Roz - A*positionx - B*positiony - C*positionz) / (A*Rdx + B*Rdy + C*Rdz)
+	double t = -(normal[0] * Ro[0] + normal[1] * Ro[1] + normal[2] * Ro[2] - normal[0] * position[0]
+		- normal[1] * position[1] - normal[2] * position[2]) / (normal[0] * Rd[0]
+			+ normal[1] * Rd[1] + normal[2] * Rd[2]);
 
-  	if (t > 0) return t;
+	if (t > 0) return t;
 	return -1;
 }
 
@@ -140,7 +140,7 @@ double* intersect(double* Rd, int objectNum, Object** objects) {
 	int i;
 	double t;
 	double Ro[3] = { 0, 0, 0 };
-	for (i = 0; i<objectNum; i++){
+	for (i = 0; i<objectNum; i++) {
 		if (objects[i]->kind == 1) {
 			t = sphereIntersection(Ro, Rd, objects[i]->sphere.position, objects[i]->sphere.radius);
 			if (t) {
@@ -169,16 +169,16 @@ double* intersect(double* Rd, int objectNum, Object** objects) {
 		}
 	}
 	double* result;
-  	result = malloc(sizeof(double)*2);
-  	result[0] = (double) closestObjectNum;
-  	result[1] = bestT;
+	result = malloc(sizeof(double) * 2);
+	result[0] = (double)closestObjectNum;
+	result[1] = bestT;
 	return result;
 }
 
 // radial attenuation
 // if distance between light and intersect position is infinity, returns 1.
 // Otherwise, return 1 / (radialA0 + radialA1 * distance + radialA2 * distance^2)
-double frad(int lightIndex, double* intersectPosition, Object** objects){
+double frad(int lightIndex, double* intersectPosition, Object** objects) {
 	double lightPostion[3];
 	double radial[3];
 	double distance;
@@ -186,17 +186,17 @@ double frad(int lightIndex, double* intersectPosition, Object** objects){
 	lightPostion[0] = objects[lightIndex]->light.position[0];
 	lightPostion[1] = objects[lightIndex]->light.position[1];
 	lightPostion[2] = objects[lightIndex]->light.position[2];
-	distance = sqr(lightPostion[0]-intersectPosition[0]) + sqr(lightPostion[1]-intersectPosition[1]) +
-						sqr(lightPostion[2]-intersectPosition[2]);
+	distance = sqr(lightPostion[0] - intersectPosition[0]) + sqr(lightPostion[1] - intersectPosition[1]) +
+		sqr(lightPostion[2] - intersectPosition[2]);
 	distance = sqrt(distance);
 	radial[0] = objects[lightIndex]->light.radialA0;
 	radial[1] = objects[lightIndex]->light.radialA1;
 	radial[2] = objects[lightIndex]->light.radialA2;
-	if (distance == INFINITY){
+	if (distance == INFINITY) {
 		return 1;
 	}
 	else {
-		result = 1 / (radial[2]*sqr(distance) + radial[1]*distance + radial[0]);
+		result = 1 / (radial[2] * sqr(distance) + radial[1] * distance + radial[0]);
 		return result;
 	}
 }
@@ -204,7 +204,7 @@ double frad(int lightIndex, double* intersectPosition, Object** objects){
 // angular attenuation
 // if cos(alpha) < cos(theta), which means alpha > theta. Then returns 0 since there is no light there.
 // Otherwise, return cos(aplha)^angular
-double fang(int lightIndex, double* intersectPosition, Object** objects){
+double fang(int lightIndex, double* intersectPosition, Object** objects) {
 	double Vl[3];
 	double Vo[3];
 	double angular;
@@ -219,14 +219,14 @@ double fang(int lightIndex, double* intersectPosition, Object** objects){
 	Vo[2] = intersectPosition[2] - objects[lightIndex]->light.position[2];
 	normalize(Vo);
 
-	double cosa = Vl[0]*Vo[0]+Vl[1]*Vo[1]+Vl[2]*Vo[2];
-	if (objects[lightIndex]->light.angularA0 != 0){
+	double cosa = Vl[0] * Vo[0] + Vl[1] * Vo[1] + Vl[2] * Vo[2];
+	if (objects[lightIndex]->light.angularA0 != 0) {
 		angular = objects[lightIndex]->light.angularA0;
 	}
 	else {
 		return 1;
 	}
-	if (cos(objects[lightIndex]->light.theta) > cosa){
+	if (cos(objects[lightIndex]->light.theta) > cosa) {
 		return 0;
 	}
 	else {
@@ -237,33 +237,33 @@ double fang(int lightIndex, double* intersectPosition, Object** objects){
 // diffuse reflection
 // if NL>0, do the KI(NL), where N is the normal, L is the light,
 // K is the diffuse color and I is the light color
-double* diffuse(int objectIndex, int lightIndex, double* N, double* L, Object** objects){
-	double NL = N[0]*L[0]+N[1]*L[1]+N[2]*L[2]; // N*L
+double* diffuse(int objectIndex, int lightIndex, double* N, double* L, Object** objects) {
+	double NL = N[0] * L[0] + N[1] * L[1] + N[2] * L[2]; // N*L
 	double* result;
 	double* KI;
-	result = malloc(sizeof(double)*3);
-	KI = malloc(sizeof(double)*3);
-	if (NL <= 0){
+	result = malloc(sizeof(double) * 3);
+	KI = malloc(sizeof(double) * 3);
+	if (NL <= 0) {
 		result[0] = 0;
 		result[1] = 0;
 		result[2] = 0;
 	}
 	else {
-		if (objects[objectIndex]->kind == 1){
-			KI[0] = objects[objectIndex]->sphere.diffuseColor[0]*objects[lightIndex]->light.color[0];
-			KI[1] = objects[objectIndex]->sphere.diffuseColor[1]*objects[lightIndex]->light.color[1];
-			KI[2] = objects[objectIndex]->sphere.diffuseColor[2]*objects[lightIndex]->light.color[2];
-			result[0] = KI[0]*NL;
-			result[1] = KI[1]*NL;
-			result[2] = KI[2]*NL;
+		if (objects[objectIndex]->kind == 1) {
+			KI[0] = objects[objectIndex]->sphere.diffuseColor[0] * objects[lightIndex]->light.color[0];
+			KI[1] = objects[objectIndex]->sphere.diffuseColor[1] * objects[lightIndex]->light.color[1];
+			KI[2] = objects[objectIndex]->sphere.diffuseColor[2] * objects[lightIndex]->light.color[2];
+			result[0] = KI[0] * NL;
+			result[1] = KI[1] * NL;
+			result[2] = KI[2] * NL;
 		}
-		else if (objects[objectIndex]->kind == 2){
-			KI[0] = objects[objectIndex]->plane.diffuseColor[0]*objects[lightIndex]->light.color[0];
-			KI[1] = objects[objectIndex]->plane.diffuseColor[1]*objects[lightIndex]->light.color[1];
-			KI[2] = objects[objectIndex]->plane.diffuseColor[2]*objects[lightIndex]->light.color[2];
-			result[0] = KI[0]*NL;
-			result[1] = KI[1]*NL;
-			result[2] = KI[2]*NL;
+		else if (objects[objectIndex]->kind == 2) {
+			KI[0] = objects[objectIndex]->plane.diffuseColor[0] * objects[lightIndex]->light.color[0];
+			KI[1] = objects[objectIndex]->plane.diffuseColor[1] * objects[lightIndex]->light.color[1];
+			KI[2] = objects[objectIndex]->plane.diffuseColor[2] * objects[lightIndex]->light.color[2];
+			result[0] = KI[0] * NL;
+			result[1] = KI[1] * NL;
+			result[2] = KI[2] * NL;
 		}
 	}
 	return result;
@@ -274,33 +274,33 @@ double* diffuse(int objectIndex, int lightIndex, double* N, double* L, Object** 
 // if NL>0 and RV>0, then do the KI(RV)^ns, where R is the reflection of the L,
 // V is the unit vector points from camera to the object, equals to Rd.
 // Also, K is the specular color, I is the light color and ns ---> phong model, represents shiniess
-double* specular(int objectIndex, int lightIndex, double NL, double* V, double* R, Object** objects){
-	double VR = V[0]*R[0]+V[1]*R[1]+V[2]*R[2];
+double* specular(int objectIndex, int lightIndex, double NL, double* V, double* R, Object** objects) {
+	double VR = V[0] * R[0] + V[1] * R[1] + V[2] * R[2];
 	double* result;
 	double* KI;
-	result = malloc(sizeof(double)*3);
-	KI = malloc(sizeof(double)*3);
-	if (NL <= 0 || VR <= 0){
+	result = malloc(sizeof(double) * 3);
+	KI = malloc(sizeof(double) * 3);
+	if (NL <= 0 || VR <= 0) {
 		result[0] = 0;
 		result[1] = 0;
 		result[2] = 0;
 	}
 	else {
-		if (objects[objectIndex]->kind == 1){
-			KI[0] = objects[objectIndex]->sphere.specularColor[0]*objects[lightIndex]->light.color[0];
-			KI[1] = objects[objectIndex]->sphere.specularColor[1]*objects[lightIndex]->light.color[1];
-			KI[2] = objects[objectIndex]->sphere.specularColor[2]*objects[lightIndex]->light.color[2];
-			result[0] = KI[0]*pow(VR, objects[lightIndex]->light.ns);  // I set up the ns to 20
-			result[1] = KI[1]*pow(VR, objects[lightIndex]->light.ns);
-			result[2] = KI[2]*pow(VR, objects[lightIndex]->light.ns);
+		if (objects[objectIndex]->kind == 1) {
+			KI[0] = objects[objectIndex]->sphere.specularColor[0] * objects[lightIndex]->light.color[0];
+			KI[1] = objects[objectIndex]->sphere.specularColor[1] * objects[lightIndex]->light.color[1];
+			KI[2] = objects[objectIndex]->sphere.specularColor[2] * objects[lightIndex]->light.color[2];
+			result[0] = KI[0] * pow(VR, objects[lightIndex]->light.ns);  // I set up the ns to 20
+			result[1] = KI[1] * pow(VR, objects[lightIndex]->light.ns);
+			result[2] = KI[2] * pow(VR, objects[lightIndex]->light.ns);
 		}
-		else if (objects[objectIndex]->kind == 2){
-			KI[0] = objects[objectIndex]->plane.specularColor[0]*objects[lightIndex]->light.color[0];
-			KI[1] = objects[objectIndex]->plane.specularColor[1]*objects[lightIndex]->light.color[1];
-			KI[2] = objects[objectIndex]->plane.specularColor[2]*objects[lightIndex]->light.color[2];
-			result[0] = KI[0]*pow(VR, objects[lightIndex]->light.ns);  // I set up the ns to 20
-			result[1] = KI[1]*pow(VR, objects[lightIndex]->light.ns);
-			result[2] = KI[2]*pow(VR, objects[lightIndex]->light.ns);
+		else if (objects[objectIndex]->kind == 2) {
+			KI[0] = objects[objectIndex]->plane.specularColor[0] * objects[lightIndex]->light.color[0];
+			KI[1] = objects[objectIndex]->plane.specularColor[1] * objects[lightIndex]->light.color[1];
+			KI[2] = objects[objectIndex]->plane.specularColor[2] * objects[lightIndex]->light.color[2];
+			result[0] = KI[0] * pow(VR, objects[lightIndex]->light.ns);  // I set up the ns to 20
+			result[1] = KI[1] * pow(VR, objects[lightIndex]->light.ns);
+			result[2] = KI[2] * pow(VR, objects[lightIndex]->light.ns);
 		}
 	}
 	return result;
@@ -309,26 +309,27 @@ double* specular(int objectIndex, int lightIndex, double NL, double* V, double* 
 // we only expect the value of color from 0.0 to 1.0 here
 // Thus, if the number is greater than 1, then return 1, and if the number
 // is less than 0, then return 0. Otherwise, return the number
-double clamp(double num){
-	if (num <= 0){
+double clamp(double num) {
+	if (num <= 0) {
 		return 0;
 	}
-	else if (num >= 1){
+	else if (num >= 1) {
 		return 1;
 	}
 	return num;
 }
 
 
-double* recursiveShoot(int objectNum, double* Rd, double* Ro, double r, double g, double b, Object** objects, int recursiveDepth) {
-	double color[3];
+double* recursiveShoot(int objectNum, double* Rd, double* Ro, Object** objects, int recursiveDepth) {
+	double* color;
+	color = malloc(sizeof(double) * 3);
+	color[0] = 0;
+	color[1] = 0;
+	color[2] = 0;
 	double reflectivity;
 	double refractivity;
 	double ior;
-	color[0] = red;
-	color[1] = green;
-	color[2] = blue;
-	if (depth > 7) {
+	if (recursiveDepth > 7) {
 		return color;
 	}
 	double* inter;
@@ -337,9 +338,6 @@ double* recursiveShoot(int objectNum, double* Rd, double* Ro, double r, double g
 	inter = intersect(Rd, objectNum, objects);
 	int intersection = (int)inter[0];
 	double bestT = inter[1];
-	pixel->r = 0;
-	pixel->g = 0;
-	pixel->b = 0;
 	int hasShadow = 0;
 	if (intersection >= 0) {
 		int recursiveDepth = 1;
@@ -436,12 +434,16 @@ double* recursiveShoot(int objectNum, double* Rd, double* Ro, double r, double g
 					newRo[1] = Ron[1];
 					newRo[2] = Ron[2];
 					double newRd[3];
+					double* reflectionColor;
+					double* refractionColor;
+					reflectionColor = malloc(sizeof(double) * 3);
+					refractionColor = malloc(sizeof(double) * 3);
 					if (reflectivity > 0) {
 						// reflection part
 						newRd[0] = R[0];
 						newRd[1] = R[1];
 						newRd[2] = R[2];
-
+						reflectionColor = recursiveShoot(objectNum, newRd, newRo, objects, recursiveDepth + 1);
 					}
 					if (refractivity > 0) {
 						// refraction part
@@ -463,9 +465,12 @@ double* recursiveShoot(int objectNum, double* Rd, double* Ro, double r, double g
 						newRd[0] = -N[0] * cosPhi + b[0] * sinPhi;
 						newRd[1] = -N[1] * cosPhi + b[1] * sinPhi;
 						newRd[2] = -N[2] * cosPhi + b[2] * sinPhi;
+						refractionColor = recursiveShoot(objectNum, newRd, newRo, objects, recursiveDepth + 1);
 					}
-					
-					return recursiveShoot(objectNum, newRd, newRo, )
+					color[0] = (1 - reflectivity - refractivity)*color[0] + refractionColor[0] * refractivity + reflectionColor[0] * reflectivity;
+					color[1] = (1 - reflectivity - refractivity)*color[1] + refractionColor[1] * refractivity + reflectionColor[1] * reflectivity;
+					color[2] = (1 - reflectivity - refractivity)*color[2] + refractionColor[2] * refractivity + reflectionColor[2] * reflectivity;
+					return color;
 				}
 			}
 		}
@@ -510,17 +515,20 @@ PPMimage* rayCasting(char* filename, int w, int h, Object** objects) {
 	double pixheight = height / h;
 	double pointx, pointy, pointz;
 	int j, k;
-	double Ro[3] = {0, 0, 0};
+	double Ro[3] = { 0, 0, 0 };
 	for (k = 0; k<h; k++) {
-		int count = (h-k-1)*w*3;
+		int count = (h - k - 1)*w * 3;
 		double vy = -height / 2 + pixheight * (k + 0.5);
 		for (j = 0; j<w; j++) {
 			double vx = -width / 2 + pixwidth * (j + 0.5);
 			double Rd[3] = { vx, vy, 1 };
 
 			normalize(Rd);
-			
-			double* color = recursiveShoot(i, Rd, Ro, red, green, blue, objects, recursiveDepth);
+			pixel->r = 0;
+			pixel->g = 0;
+			pixel->b = 0;
+			int recursiveDepth = 0;
+			double* color = recursiveShoot(i, Rd, Ro, objects, recursiveDepth);
 			pixel->r = color[0];
 			pixel->g = color[1];
 			pixel->b = color[2];
