@@ -436,14 +436,14 @@ double* recursiveShoot(int objectNum, double* Rd, double* Ro, Object** objects, 
 					double newRd[3];
 					double* reflectionColor;
 					double* refractionColor;
+					reflectionColor = malloc(sizeof(double) * 3);
+					refractionColor = malloc(sizeof(double) * 3);
 					reflectionColor[0] = 0;
 					reflectionColor[1] = 0;
 					reflectionColor[2] = 0;
 					refractionColor[0] = 0;
 					refractionColor[1] = 0;
 					refractionColor[2] = 0;
-					reflectionColor = malloc(sizeof(double) * 3);
-					refractionColor = malloc(sizeof(double) * 3);
 					if (reflectivity > 0) {
 						// reflection part
 						newRd[0] = R[0];
@@ -476,11 +476,11 @@ double* recursiveShoot(int objectNum, double* Rd, double* Ro, Object** objects, 
 					color[0] = (1 - reflectivity - refractivity)*color[0] + refractionColor[0] * refractivity + reflectionColor[0] * reflectivity;
 					color[1] = (1 - reflectivity - refractivity)*color[1] + refractionColor[1] * refractivity + reflectionColor[1] * reflectivity;
 					color[2] = (1 - reflectivity - refractivity)*color[2] + refractionColor[2] * refractivity + reflectionColor[2] * reflectivity;
-					return color;
 				}
 			}
 		}
 	}
+	return color;
 }
 
 // raycasting function
