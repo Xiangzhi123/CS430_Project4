@@ -134,12 +134,11 @@ double planeIntersection(double* Ro, double* Rd, double* position, double* norma
 // intersect function takes in object index, objects and Rd.
 // returns the pointer of type double that contains the closest object index and the closest t value
 // when the closest t is smaller than 0, there is no intersection point
-double* intersect(double* Rd, int objectNum, Object** objects) {
+double* intersect(double* Ro, double* Rd, int objectNum, Object** objects) {
 	int closestObjectNum = -1;
 	double bestT = INFINITY;
 	int i;
 	double t;
-	double Ro[3] = { 0, 0, 0 };
 	for (i = 0; i<objectNum; i++) {
 		if (objects[i]->kind == 1) {
 			t = sphereIntersection(Ro, Rd, objects[i]->sphere.position, objects[i]->sphere.radius);
@@ -335,14 +334,11 @@ double* recursiveShoot(int objectNum, double* Rd, double* Ro, Object** objects, 
 	double* inter;
 	inter = malloc(sizeof(double) * 2);
 
-	inter = intersect(Rd, objectNum, objects);
+	inter = intersect(Ro, Rd, objectNum, objects);
 	int intersection = (int)inter[0];
 	double bestT = inter[1];
 	int hasShadow = 0;
 	if (intersection >= 0) {
-		double red = 0;
-		double green = 0;
-		double blue = 0;
 		double Ron[3];
 		double N[3];
 		double V[3];
@@ -448,6 +444,7 @@ double* recursiveShoot(int objectNum, double* Rd, double* Ro, Object** objects, 
 						newRd[0] = R[0];
 						newRd[1] = R[1];
 						newRd[2] = R[2];
+						normalize(newRd);
 						reflectionColor = recursiveShoot(objectNum, newRd, newRo, objects, recursiveDepth + 1);
 					}
 					if (refractivity > 0) {
@@ -470,6 +467,7 @@ double* recursiveShoot(int objectNum, double* Rd, double* Ro, Object** objects, 
 						newRd[0] = -N[0] * cosPhi + b[0] * sinPhi;
 						newRd[1] = -N[1] * cosPhi + b[1] * sinPhi;
 						newRd[2] = -N[2] * cosPhi + b[2] * sinPhi;
+						normalize(newRd);
 						refractionColor = recursiveShoot(objectNum, newRd, newRo, objects, recursiveDepth + 1);
 					}
 					color[0] = (1 - reflectivity - refractivity)*color[0] + refractionColor[0] * refractivity + reflectionColor[0] * reflectivity;
