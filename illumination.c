@@ -340,7 +340,6 @@ double* recursiveShoot(int objectNum, double* Rd, double* Ro, Object** objects, 
 	double bestT = inter[1];
 	int hasShadow = 0;
 	if (intersection >= 0) {
-		int recursiveDepth = 1;
 		double red = 0;
 		double green = 0;
 		double blue = 0;
