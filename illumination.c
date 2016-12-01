@@ -319,7 +319,8 @@ double clamp(double num) {
 }
 
 
-double* recursiveShoot(int objectNum, double* Rd, double* Ro, Object** objects, int recursiveDepth) {
+// use 0 represents not inside the sphere, and 1 represents inside the sphere
+double* recursiveShoot(int objectNum, double* Rd, double* Ro, Object** objects, int recursiveDepth, int insideSphere) {
 	double* color;
 	color = malloc(sizeof(double) * 3);
 	color[0] = 0;
@@ -444,10 +445,27 @@ double* recursiveShoot(int objectNum, double* Rd, double* Ro, Object** objects, 
 						newRd[0] = R[0];
 						newRd[1] = R[1];
 						newRd[2] = R[2];
+						// avoid intersecting with the same object again
+						double offset[3] = { 0, 0, 0 };
+						offset[0] = newRd[0] * 0.0001;
+						offset[1] = newRd[1] * 0.0001;
+						offset[2] = newRd[2] * 0.0001;
+						newRo[0] = newRo[0] + offset[0];
+						newRo[1] = newRo[1] + offset[1];
+						newRo[2] = newRo[2] + offset[2];
 						normalize(newRd);
-						reflectionColor = recursiveShoot(objectNum, newRd, newRo, objects, recursiveDepth + 1);
+						reflectionColor = recursiveShoot(objectNum, newRd, newRo, objects, recursiveDepth + 1, insideSphere);
 					}
 					if (refractivity > 0) {
+						if (insideSphere == 1) {
+							ior = 1 / ior;
+						}
+						if (objects[intersection]->kind == 1 && insideSphere == 0) {
+							insideSphere = 1;
+						}
+						else if (objects[intersection]->kind == 1 && insideSphere == 1) {
+							insideSphere = 0;
+						}
 						// refraction part
 						double a[3];
 						double b[3];
@@ -467,8 +485,16 @@ double* recursiveShoot(int objectNum, double* Rd, double* Ro, Object** objects, 
 						newRd[0] = -N[0] * cosPhi + b[0] * sinPhi;
 						newRd[1] = -N[1] * cosPhi + b[1] * sinPhi;
 						newRd[2] = -N[2] * cosPhi + b[2] * sinPhi;
+						// avoid intersecting with the same object again
+						double offset[3] = { 0, 0, 0 };
+						offset[0] = newRd[0] * 0.0001;
+						offset[1] = newRd[1] * 0.0001;
+						offset[2] = newRd[2] * 0.0001;
+						newRo[0] = newRo[0] + offset[0];
+						newRo[1] = newRo[1] + offset[1];
+						newRo[2] = newRo[2] + offset[2];
 						normalize(newRd);
-						refractionColor = recursiveShoot(objectNum, newRd, newRo, objects, recursiveDepth + 1);
+						refractionColor = recursiveShoot(objectNum, newRd, newRo, objects, recursiveDepth + 1, insideSphere);
 					}
 					color[0] = (1 - reflectivity - refractivity)*color[0] + refractionColor[0] * refractivity + reflectionColor[0] * reflectivity;
 					color[1] = (1 - reflectivity - refractivity)*color[1] + refractionColor[1] * refractivity + reflectionColor[1] * reflectivity;
@@ -531,7 +557,8 @@ PPMimage* rayCasting(char* filename, int w, int h, Object** objects) {
 			pixel->g = 0;
 			pixel->b = 0;
 			int recursiveDepth = 0;
-			double* color = recursiveShoot(i, Rd, Ro, objects, recursiveDepth);
+			int insideSphere = 0;
+			double* color = recursiveShoot(i, Rd, Ro, objects, recursiveDepth, insideSphere);
 			pixel->r = color[0];
 			pixel->g = color[1];
 			pixel->b = color[2];
