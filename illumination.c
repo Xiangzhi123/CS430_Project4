@@ -441,6 +441,9 @@ double* recursiveShoot(int objectNum, double* Rd, double* Ro, Object** objects, 
 					refractionColor[1] = 0;
 					refractionColor[2] = 0;
 					if (reflectivity > 0) {
+						if (reflectivity > 1){
+							reflectivity = 1;
+						}
 						// reflection part
 						double NRd = N[0]*Rd[0]+N[1]*Rd[1]+N[2]*Rd[2];
 						newRd[0] = Rd[0]-2*NRd*N[0];
@@ -458,6 +461,12 @@ double* recursiveShoot(int objectNum, double* Rd, double* Ro, Object** objects, 
 						reflectionColor = recursiveShoot(objectNum, newRd, newRo, objects, recursiveDepth + 1, insideSphere);
 					}
 					if (refractivity > 0) {
+						if (refractivity > 1){
+							refractivity = 1;
+						}
+						if (ior <= 0){
+							fprintf(stderr, "Error: invalid value of ior\n");
+						}
 						if (insideSphere == 1) {
 							ior = 1 / ior;
 						}
@@ -472,15 +481,15 @@ double* recursiveShoot(int objectNum, double* Rd, double* Ro, Object** objects, 
 						double b[3];
 						double sinPhi, cosPhi;
 						// n x ur = {ny*urz-nz*ury, nz*urx-nx*urz, nx*ury-ny*urx}
-						a[0] = N[1] * L[2] - N[2] * L[1];
-						a[1] = N[2] * L[0] - N[0] * L[2];
-						a[2] = N[0] * L[1] - N[1] * L[0];
+						a[0] = N[1] * Rd[2] - N[2] * Rd[1];
+						a[1] = N[2] * Rd[0] - N[0] * Rd[2];
+						a[2] = N[0] * Rd[1] - N[1] * Rd[0];
 						normalize(a);
 						// b = a x n
 						b[0] = a[1] * N[2] - a[2] * N[1];
 						b[1] = a[2] * N[0] - a[0] * N[2];
 						b[2] = a[0] * N[1] - a[1] * N[0];
-						sinPhi = ior*(L[0] * b[0] + L[1] * b[1] + L[2] * b[2]);
+						sinPhi = ior*(Rd[0] * b[0] + Rd[1] * b[1] + Rd[2] * b[2]);
 						cosPhi = sqrt(1 - sqr(sinPhi));
 						// ut = -ncosPhi + bsinPhi
 						newRd[0] = -N[0] * cosPhi + b[0] * sinPhi;
@@ -496,6 +505,12 @@ double* recursiveShoot(int objectNum, double* Rd, double* Ro, Object** objects, 
 						newRo[2] = newRo[2] + offset[2];
 						normalize(newRd);
 						refractionColor = recursiveShoot(objectNum, newRd, newRo, objects, recursiveDepth + 1, insideSphere);
+					}
+					if (reflectivity < 0){
+						reflectivity = 0;
+					}
+					if (refractivity <0){
+						refractivity = 0;
 					}
 					color[0] = (1 - reflectivity - refractivity)*color[0] + refractionColor[0] * refractivity + reflectionColor[0] * reflectivity;
 					color[1] = (1 - reflectivity - refractivity)*color[1] + refractionColor[1] * refractivity + reflectionColor[1] * reflectivity;
