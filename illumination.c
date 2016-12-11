@@ -442,9 +442,10 @@ double* recursiveShoot(int objectNum, double* Rd, double* Ro, Object** objects, 
 					refractionColor[2] = 0;
 					if (reflectivity > 0) {
 						// reflection part
-						newRd[0] = -R[0];
-						newRd[1] = -R[1];
-						newRd[2] = -R[2];
+						double NRd = N[0]*Rd[0]+N[1]*Rd[1]+N[2]*Rd[2];
+						newRd[0] = Rd[0]-2*NRd*N[0];
+						newRd[1] = Rd[1]-2*NRd*N[1];
+						newRd[2] = Rd[2]-2*NRd*N[2];
 						// avoid intersecting with the same object again
 						double offset[3] = { 0, 0, 0 };
 						offset[0] = newRd[0] * 0.0001;
